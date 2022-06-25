@@ -40,7 +40,9 @@ const SpeechToText: React.FC = () => {
             return;
 
         recognizer.recognized = (sender: Recognizer, event: SpeechRecognitionEventArgs) => {
-            setDisplayText(event.result.text);
+            setDisplayText((prev) => {
+                return prev + event.result.text;
+            })
         }
 
         recognizer.startContinuousRecognitionAsync();
