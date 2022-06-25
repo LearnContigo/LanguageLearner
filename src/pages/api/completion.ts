@@ -15,15 +15,19 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       console.log(req.body.message);
 
     let {data} = await axios.post('https://api.openai.com/v1/completions', {
-        model: "text-davinci-002",
-        prompt: `An Engaging Discussion about sports: 
-        ${req.body.message}`,
-        max_tokens: 30,
-        temperature: 0,
+        model: "text-curie-001",
+        prompt: `A conversation in spanish with a friend who asks a lot of questions:
+        You: Hola como estas?
+        Friend: Soy bueno como estas
+        You: ${req.body.message}
+        Friend:`,
+        max_tokens: 60,
+        temperature: 0.6,
         top_p: 1,
         n: 1,
         stream: false,
         logprobs: null,
+        stop: 'You:'
     }, headers);
 
     res.status(200).send(data);

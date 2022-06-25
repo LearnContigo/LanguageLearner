@@ -23,7 +23,7 @@ const SpeechToText: React.FC = () => {
                 throw Error("Error Fetching Token");
 
             const speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
-            speechConfig.speechRecognitionLanguage = 'en-US';
+            speechConfig.speechRecognitionLanguage = 'es-es';
             
             const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
             const recognizer: SpeechRecognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
