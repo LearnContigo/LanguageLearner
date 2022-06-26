@@ -1,45 +1,26 @@
-import React, { useState, useEffect } from 'react'
-import { getTokenOrRefresh } from '../util/tokenUtil'
+import React, { useState } from 'react'
+import { useConversation } from './ConversationContext';
 import TextToSpeech from '../util/textToSpeech';
-import { Recognizer, SpeechRecognitionEventArgs, SpeechRecognizer } from 'microsoft-cognitiveservices-speech-sdk'
+import { Recognizer, SpeechRecognitionEventArgs, PropertyId } from 'microsoft-cognitiveservices-speech-sdk'
 import axios from "axios";
-
-const speechsdk = require('microsoft-cognitiveservices-speech-sdk')
-
 
 const SpeechToText: React.FC = () => {
 
+    const {recognizer} = useConversation();
     const [displayText, setDisplayText] = useState("");
-    const [recognizer, setRecognizer] = useState<SpeechRecognizer | undefined>();
     const [recognizing, setRecognizing] = useState(false);
     const [speaking, setSpeaking] = useState(false);
 
-    useEffect(() => {
-
-        const createRecognizer = async () => {
-            const tokenObj = await getTokenOrRefresh();
-
-            if(!tokenObj.authToken)
-                throw Error("Error Fetching Token");
-
-            const speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
-            speechConfig.speechRecognitionLanguage = 'es-es';
-            
-            const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
-            const recognizer: SpeechRecognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
-
-            setRecognizer(recognizer);
-        }
-
-        createRecognizer();
-    }, [])
-
     const StartTranscription = () => {
-
+        
         if (!recognizer)
             return;
 
         recognizer.recognized = (sender: Recognizer, event: SpeechRecognitionEventArgs) => {
+            
+            let confidences = event.result.properties.getProperty(PropertyId.SpeechServiceResponse_JsonResult);
+            console.log(JSON.parse(confidences));
+
             setDisplayText((prev) => {
                 return prev + event.result.text;
             })
