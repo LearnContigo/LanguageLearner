@@ -12,8 +12,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         },
       };
 
-      console.log(req.body.message);
-
     let {data} = await axios.post('https://api.openai.com/v1/completions', {
         model: "text-curie-001",
         prompt: `A conversation in spanish with a friend who is teaching spanish:
