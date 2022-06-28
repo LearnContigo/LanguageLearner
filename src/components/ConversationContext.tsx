@@ -4,14 +4,21 @@ import {SpeechRecognizer, SpeechRecognitionEventArgs, Recognizer, PropertyId}  f
 import TextToSpeech from '../util/textToSpeech';
 import axios from "axios";
 
+export interface Confidences {
+    DisplayText: string
+    NBest: {Words: 
+        {Word: string 
+        Confidence: Number}[]}[]
+}
 
 interface ConversationContext {
     recognizer ?: SpeechRecognizer
     listening : boolean
-    StartTranscription : (onRecognized: (result: SpeechRecognitionEventArgs) => void) => void
+    StartTranscription : (onRecognized: (result: Confidences) => void) => void
     StopTranscription: () => void
     SendMessage: (message: string) => void 
 }
+
 
 const ConversationContext = createContext({} as ConversationContext);
 
@@ -24,16 +31,16 @@ export const ConversationProvider : React.FC<React.PropsWithChildren> = ({childr
     const recognizer = useRecognizer();
     const [listening, setListening] = useState(false);
 
-    const StartTranscription = (onRecognized: (result: SpeechRecognitionEventArgs) => void) => {
+    const StartTranscription = (onRecognized: (result: Confidences) => void) => {
 
         if (!recognizer) return;
 
         recognizer.recognized = (sender: Recognizer, event: SpeechRecognitionEventArgs) => {
             
-            let confidences = JSON.parse(event.result.properties.getProperty(PropertyId.SpeechServiceResponse_JsonResult));
+            let confidences : Confidences = JSON.parse(event.result.properties.getProperty(PropertyId.SpeechServiceResponse_JsonResult));
             
             //Call some hook with confidences, and results
-            onRecognized(event)
+            onRecognized(confidences)
         }
     
         recognizer.startContinuousRecognitionAsync();

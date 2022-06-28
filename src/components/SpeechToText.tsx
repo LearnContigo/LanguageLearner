@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { useConversation } from './ConversationContext';
+import Message from './Message';
 
 const SpeechToText: React.FC = () => {
 
     const {listening, StartTranscription, StopTranscription, SendMessage} = useConversation();
     const [displayText, setDisplayText] = useState("");
+    const [confidences, setConfidences] = useState({})
 
     const OnButtonPressed = () => {
 
@@ -16,14 +18,18 @@ const SpeechToText: React.FC = () => {
         }
 
         StartTranscription((res) => {
-            setDisplayText((prev) => {return prev + res.result.text});
+
+            if(!res.DisplayText || res.DisplayText == "") return;
+
+            setDisplayText(res.DisplayText);
+            setConfidences(res);
         });
     }
 
   return (
     <div>
         <button onClick={OnButtonPressed}>{!listening ? "Transcribe" : "Send Transcription"}</button>
-        <p>{displayText}</p>
+        <Message confidences={confidences} />
     </div>
   )
 }
