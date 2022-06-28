@@ -16,7 +16,7 @@ const SpeechToText: React.FC = () => {
         }
 
         StartTranscription((res) => {
-            setDisplayText(res.result.text);
+            setDisplayText((prev) => {return prev + res.result.text});
         });
     }
 
