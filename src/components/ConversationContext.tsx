@@ -4,13 +4,6 @@ import {SpeechRecognizer, SpeechRecognitionEventArgs, Recognizer, PropertyId}  f
 import TextToSpeech from '../util/textToSpeech';
 import axios from "axios";
 
-export interface Confidences {
-    DisplayText: string
-    NBest: {Words: 
-        {Word: string 
-        Confidence: Number}[]}[]
-}
-
 interface ConversationContext {
     recognizer ?: SpeechRecognizer
     listening : boolean
@@ -18,7 +11,6 @@ interface ConversationContext {
     StopTranscription: () => void
     SendMessage: (message: string) => void 
 }
-
 
 const ConversationContext = createContext({} as ConversationContext);
 
@@ -38,8 +30,6 @@ export const ConversationProvider : React.FC<React.PropsWithChildren> = ({childr
         recognizer.recognized = (sender: Recognizer, event: SpeechRecognitionEventArgs) => {
             
             let confidences : Confidences = JSON.parse(event.result.properties.getProperty(PropertyId.SpeechServiceResponse_JsonResult));
-            
-            //Call some hook with confidences, and results
             onRecognized(confidences)
         }
     

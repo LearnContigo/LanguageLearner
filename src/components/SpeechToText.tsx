@@ -5,31 +5,27 @@ import Message from './Message';
 const SpeechToText: React.FC = () => {
 
     const {listening, StartTranscription, StopTranscription, SendMessage} = useConversation();
-    const [displayText, setDisplayText] = useState("");
-    const [confidences, setConfidences] = useState({})
+    const [message, setMessage] = useState({} as Message)
 
     const OnButtonPressed = () => {
 
         if(listening){
             StopTranscription();
-            SendMessage(displayText);
-            setDisplayText("");
+            SendMessage(message.message);
+            setMessage({message: "", confidence: 1});
             return;
         }
 
         StartTranscription((res) => {
-
             if(!res.DisplayText || res.DisplayText == "") return;
-
-            setDisplayText(res.DisplayText);
-            setConfidences(res);
+            setMessage({message: res.DisplayText, confidence: res.NBest[0].Confidence})
         });
     }
 
   return (
     <div>
         <button onClick={OnButtonPressed}>{!listening ? "Transcribe" : "Send Transcription"}</button>
-        <Message confidences={confidences} />
+        <Message message={message} />
     </div>
   )
 }
