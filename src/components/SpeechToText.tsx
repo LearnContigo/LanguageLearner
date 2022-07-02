@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import { useConversation } from './ConversationContext';
+import TextToSpeech from '../util/textToSpeech';
 import Message from './Message';
 
 const SpeechToText: React.FC = () => {
 
-    const {listening, StartTranscription, StopTranscription, SendMessage} = useConversation();
+    const { translator, listening, StartTranscription, StopTranscription, SendMessage} = useConversation();
     const [message, setMessage] = useState({} as Message)
 
     const OnButtonPressed = () => {
@@ -22,8 +23,16 @@ const SpeechToText: React.FC = () => {
         });
     }
 
+
+    const OnHelpPressed = () => {
+        translator?.recognizeOnceAsync(result => {
+            TextToSpeech(result.translations.get("es"));
+        });
+    }
+
   return (
     <div>
+        <button onClick={OnHelpPressed}>Help</button>
         <button onClick={OnButtonPressed}>{!listening ? "Transcribe" : "Send Transcription"}</button>
         <Message message={message} />
     </div>

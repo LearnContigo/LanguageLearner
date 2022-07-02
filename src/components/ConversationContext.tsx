@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState } from "react";
 import useRecognizer from "./useRecognizer";
-import {SpeechRecognizer, SpeechRecognitionEventArgs, Recognizer, PropertyId}  from 'microsoft-cognitiveservices-speech-sdk'
+import useTranslator from './useTranslator';
+import {SpeechRecognizer, SpeechRecognitionEventArgs, Recognizer, PropertyId, TranslationRecognizer}  from 'microsoft-cognitiveservices-speech-sdk'
 import TextToSpeech from '../util/textToSpeech';
 import axios from "axios";
 
 interface ConversationContext {
+    translator ?: TranslationRecognizer
     recognizer ?: SpeechRecognizer
     listening : boolean
     StartTranscription : (onRecognized: (result: Confidences) => void) => void
@@ -20,8 +22,9 @@ export const useConversation = () => {
 
 export const ConversationProvider : React.FC<React.PropsWithChildren> = ({children}) => {
 
-    const recognizer = useRecognizer();
+    const recognizer = useRecognizer('es-es');
     const [listening, setListening] = useState(false);
+    const translator = useTranslator();
 
     const StartTranscription = (onRecognized: (result: Confidences) => void) => {
 
@@ -53,7 +56,7 @@ export const ConversationProvider : React.FC<React.PropsWithChildren> = ({childr
         TextToSpeech(response);
     }
 
-    const obj = {recognizer, listening, StartTranscription, StopTranscription, SendMessage}
+    const obj = { translator, recognizer, listening, StartTranscription, StopTranscription, SendMessage}
 
     return <ConversationContext.Provider value={obj}>{children}</ConversationContext.Provider>
 }
