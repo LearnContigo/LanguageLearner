@@ -11,7 +11,7 @@ interface ConversationContext {
     listening : boolean
     StartTranscription : (onRecognized: (result: Confidences) => void) => void
     StopTranscription: () => void
-    SendMessage: (message: string) => void 
+    SendMessage: (message: string) => Promise<{message: string, response: string}> 
 }
 
 const ConversationContext = createContext({} as ConversationContext);
@@ -45,6 +45,7 @@ export const ConversationProvider : React.FC<React.PropsWithChildren> = ({childr
         setListening(false);
     }
 
+
     const SendMessage = async (message: string) => {
 
         const res = await axios.post("/api/completion", {
@@ -54,6 +55,8 @@ export const ConversationProvider : React.FC<React.PropsWithChildren> = ({childr
         const response = res.data.choices[0].text;
 
         TextToSpeech(response);
+
+        return {message, response}
     }
 
     const obj = { translator, recognizer, listening, StartTranscription, StopTranscription, SendMessage}
