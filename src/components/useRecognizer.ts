@@ -4,7 +4,7 @@ import { SpeechRecognizer, SpeechConfig, ServicePropertyChannel } from 'microsof
 
 const speechsdk = require('microsoft-cognitiveservices-speech-sdk')
 
-const useRecognizer = () => {
+const useRecognizer = (language: string) => {
 
     const [recognizer, setRecognizer] = useState<SpeechRecognizer | undefined>();
 
@@ -17,7 +17,7 @@ const useRecognizer = () => {
                 throw Error("Error Fetching Token");
 
             const speechConfig : SpeechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
-            speechConfig.speechRecognitionLanguage = 'es-es';
+            speechConfig.speechRecognitionLanguage = language;
 
             //Enable detailed results from a transcription, including word by word confidence
             speechConfig.setServiceProperty("wordLevelConfidence","true", ServicePropertyChannel.UriQueryParameter);

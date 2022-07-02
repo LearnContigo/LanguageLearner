@@ -1,14 +1,15 @@
 import React, { createContext, useContext, useState } from "react";
 import useRecognizer from "./useRecognizer";
-import {SpeechRecognizer, SpeechRecognitionEventArgs, Recognizer, PropertyId}  from 'microsoft-cognitiveservices-speech-sdk'
+import useTranslator from './useTranslator';
+import {SpeechRecognizer, SpeechRecognitionEventArgs, Recognizer, PropertyId, TranslationRecognizer}  from 'microsoft-cognitiveservices-speech-sdk'
 import TextToSpeech from '../util/textToSpeech';
 import axios from "axios";
 
-
 interface ConversationContext {
+    translator ?: TranslationRecognizer
     recognizer ?: SpeechRecognizer
     listening : boolean
-    StartTranscription : (onRecognized: (result: SpeechRecognitionEventArgs) => void) => void
+    StartTranscription : (onRecognized: (result: Confidences) => void) => void
     StopTranscription: () => void
     SendMessage: (message: string) => void 
 }
@@ -21,19 +22,18 @@ export const useConversation = () => {
 
 export const ConversationProvider : React.FC<React.PropsWithChildren> = ({children}) => {
 
-    const recognizer = useRecognizer();
+    const recognizer = useRecognizer('es-es');
     const [listening, setListening] = useState(false);
+    const translator = useTranslator();
 
-    const StartTranscription = (onRecognized: (result: SpeechRecognitionEventArgs) => void) => {
+    const StartTranscription = (onRecognized: (result: Confidences) => void) => {
 
         if (!recognizer) return;
 
         recognizer.recognized = (sender: Recognizer, event: SpeechRecognitionEventArgs) => {
             
-            let confidences = JSON.parse(event.result.properties.getProperty(PropertyId.SpeechServiceResponse_JsonResult));
-            
-            //Call some hook with confidences, and results
-            onRecognized(event)
+            let confidences : Confidences = JSON.parse(event.result.properties.getProperty(PropertyId.SpeechServiceResponse_JsonResult));
+            onRecognized(confidences)
         }
     
         recognizer.startContinuousRecognitionAsync();
@@ -56,7 +56,7 @@ export const ConversationProvider : React.FC<React.PropsWithChildren> = ({childr
         TextToSpeech(response);
     }
 
-    const obj = {recognizer, listening, StartTranscription, StopTranscription, SendMessage}
+    const obj = { translator, recognizer, listening, StartTranscription, StopTranscription, SendMessage}
 
     return <ConversationContext.Provider value={obj}>{children}</ConversationContext.Provider>
 }
