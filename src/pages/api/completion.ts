@@ -14,11 +14,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     let {data} = await axios.post('https://api.openai.com/v1/completions', {
         model: "text-curie-001",
-        prompt: `A conversation in spanish with a friend who is teaching spanish:
-        You: Hola como estas?
-        Friend: Soy bueno. ¿Cómo te llamas?
-        You: Me llamo Alicia.
-        Friend: Me llamo Luis. ¿De dónde eres?
+        prompt: `A conversation in english:
+        You: Yo man.
+        Friend: Hey, how you doing?
+        You: Im alex.
+        Friend: Im josh.
         You:${req.body.message}
         Friend:`,
         max_tokens: 60,

@@ -17,7 +17,7 @@ const useRecognizer = () => {
                 throw Error("Error Fetching Token");
 
             const speechConfig : SpeechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
-            speechConfig.speechRecognitionLanguage = 'es-es';
+            speechConfig.speechRecognitionLanguage = 'en-US'; // TODO: change to spanish
 
             //Enable detailed results from a transcription, including word by word confidence
             speechConfig.setServiceProperty("wordLevelConfidence","true", ServicePropertyChannel.UriQueryParameter);
