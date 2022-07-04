@@ -8,13 +8,16 @@ const SpeechToText: React.FC = () => {
 
     const { translator, listening, StartTranscription, StopTranscription, SendMessage } = useConversation();
     const [message, setMessage] = useState({ message: "", confidence: 1 } as Message)
+    const [isTranslating, setIsTranslating] = useState(false);
 
     // TODO: conversation assumes human<->AI message is 1:1 back and forth 
     const [conversation, setConversation] = useState<string[]>([]);
 
     const OnHelpPressed = () => {
+        setIsTranslating(true);
         translator?.recognizeOnceAsync(result => {
             TextToSpeech(result.translations.get("es"));
+            setIsTranslating(false);
         });
     }
 
@@ -62,7 +65,7 @@ const SpeechToText: React.FC = () => {
             <button className='border border-black p-3' onClick={OnTranscribePressed}>{!listening ? "Record your message" : "Stop recording"}</button>
             <button className='border border-black p-3' onClick={OnSendPressed}>Send Message</button>
             <Message message={message} />
-            <button className='border border-black p-3' onClick={OnHelpPressed}>Need a translation?</button>
+            <button disabled={isTranslating} className='border border-black p-3' onClick={OnHelpPressed}>Need a translation?</button>
         </div>
     )
 }
