@@ -6,14 +6,9 @@ import {MessageLog} from './MessageLog';
 
 const SpeechToText: React.FC = () => {
 
-    const { translator, listening, StartTranscription, StopTranscription, SendMessage } = useConversation();
+    const { messageLog, AppendToMessageLog, translator, listening, StartTranscription, StopTranscription, SendMessage } = useConversation();
     const [message, setMessage] = useState({ message: "", confidence: 1 } as Message)
     const [isTranslating, setIsTranslating] = useState(false);
-    const [messageLog, setMessageLog] = useState<MessageLogItem[]>([]);
-
-    const AppendToMessageLog = (logItem: MessageLogItem) => {
-        setMessageLog(prev => [...prev, logItem])
-    }
 
     const OnHelpPressed = () => {
         setIsTranslating(true);
@@ -57,6 +52,7 @@ const SpeechToText: React.FC = () => {
     const OnRedoPressed = () => {
         setMessage({ message: "", confidence: 1 });
     }
+    
     return (
         <div className='space-x-2.5'>
             <MessageLog messageLog={messageLog}/>

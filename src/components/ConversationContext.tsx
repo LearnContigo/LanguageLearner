@@ -9,6 +9,8 @@ interface ConversationContext {
     translator ?: TranslationRecognizer
     recognizer ?: SpeechRecognizer
     listening : boolean
+    messageLog: MessageLogItem[]
+    AppendToMessageLog: (logItem: MessageLogItem) => void
     StartTranscription : (onRecognized: (result: Confidences) => void) => void
     StopTranscription: () => void
     SendMessage: (message: string) => Promise<{message: string, response: string}> 
@@ -22,6 +24,7 @@ export const useConversation = () => {
 
 export const ConversationProvider : React.FC<React.PropsWithChildren> = ({children}) => {
 
+    const [messageLog, setMessageLog] = useState<MessageLogItem[]>([]);
     const recognizer = useRecognizer('es-es');
     const [listening, setListening] = useState(false);
     const translator = useTranslator();
@@ -45,6 +48,9 @@ export const ConversationProvider : React.FC<React.PropsWithChildren> = ({childr
         setListening(false);
     }
 
+    const AppendToMessageLog = (logItem: MessageLogItem) => {
+        setMessageLog(prev => [...prev, logItem])
+    }
 
     const SendMessage = async (message: string) => {
 
@@ -59,7 +65,7 @@ export const ConversationProvider : React.FC<React.PropsWithChildren> = ({childr
         return {message, response}
     }
 
-    const obj = { translator, recognizer, listening, StartTranscription, StopTranscription, SendMessage}
+    const obj = { messageLog, AppendToMessageLog, translator, recognizer, listening, StartTranscription, StopTranscription, SendMessage}
 
     return <ConversationContext.Provider value={obj}>{children}</ConversationContext.Provider>
 }
