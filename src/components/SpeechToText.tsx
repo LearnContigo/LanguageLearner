@@ -1,17 +1,19 @@
 import React, { useState } from 'react'
 import { useConversation } from './ConversationContext';
-
 import Message from './Message';
 import TextToSpeech from '../util/textToSpeech';
+import {MessageLog} from './MessageLog';
 
 const SpeechToText: React.FC = () => {
 
     const { translator, listening, StartTranscription, StopTranscription, SendMessage } = useConversation();
     const [message, setMessage] = useState({ message: "", confidence: 1 } as Message)
     const [isTranslating, setIsTranslating] = useState(false);
+    const [messageLog, setMessageLog] = useState<MessageLogItem[]>([]);
 
-    // TODO: conversation assumes human<->AI message is 1:1 back and forth 
-    const [conversation, setConversation] = useState<string[]>([]);
+    const AppendToMessageLog = (logItem: MessageLogItem) => {
+        setMessageLog(prev => [...prev, logItem])
+    }
 
     const OnHelpPressed = () => {
         setIsTranslating(true);
@@ -46,8 +48,9 @@ const SpeechToText: React.FC = () => {
             alert("Record a message!")
             return;
         }
+        AppendToMessageLog({message: message.message, userSent: true})
         const output = await SendMessage(message.message);
-        setConversation(oldArray => [...oldArray, output.message, output.response])
+        AppendToMessageLog({message: output.response, userSent: false})
         setMessage({ message: "", confidence: 1 });
     }
 
@@ -56,10 +59,7 @@ const SpeechToText: React.FC = () => {
     }
     return (
         <div className='space-x-2.5'>
-            {conversation.map((message, index) => {
-                if (index % 2 == 0) return (<div key={index}>You: <div className='border border-purple-400 border-4'>{message}</div></div>)
-                return <div key={index}>Contigo: <div className='border border-red-400 border-4' >{message}</div></div>
-            })}
+            <MessageLog messageLog={messageLog}/>
             <br />
             <button className='border border-black p-3' onClick={OnRedoPressed}>Redo Message</button>
             <button className='border border-black p-3' onClick={OnTranscribePressed}>{!listening ? "Record your message" : "Stop recording"}</button>

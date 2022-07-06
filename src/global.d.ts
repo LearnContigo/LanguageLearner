@@ -12,4 +12,10 @@ declare global {
         confidence: number
     }
 
+    interface MessageLogItem {
+        message: string
+        userSent: boolean
+    }
+    
+
 }
