@@ -13,8 +13,9 @@ const SpeechToText: React.FC = () => {
     const OnHelpPressed = () => {
         setIsTranslating(true);
         translator?.recognizeOnceAsync(result => {
-            TextToSpeech(result.translations.get("es"));
-            setIsTranslating(false);
+            TextToSpeech(result.translations.get("es"), () => {
+                setIsTranslating(false);
+            }); 
         });
     }
 

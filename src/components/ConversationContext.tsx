@@ -52,10 +52,17 @@ export const ConversationProvider : React.FC<React.PropsWithChildren> = ({childr
         setMessageLog(prev => [...prev, logItem])
     }
 
+    
+    const GetPastMessages = (N: Number) => {
+        if(N > messageLog.length) return messageLog;
+        return messageLog.slice(-N, messageLog.length);
+    }
+
     const SendMessage = async (message: string) => {
 
         const res = await axios.post("/api/completion", {
-            message
+            message,
+            context: GetPastMessages(4)
         });
 
         const response = res.data.choices[0].text;
