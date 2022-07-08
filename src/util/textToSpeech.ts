@@ -1,5 +1,5 @@
 import { getTokenOrRefresh } from './tokenUtil'
-import { SpeechSynthesisEventArgs, SpeechSynthesisResult, SpeechSynthesizer } from 'microsoft-cognitiveservices-speech-sdk'
+import { SpeechSynthesisResult, SpeechSynthesizer } from 'microsoft-cognitiveservices-speech-sdk'
 const speechsdk = require('microsoft-cognitiveservices-speech-sdk')
 
 const TextToSpeech = async (text: string, onComplete ?: () => void) => {
@@ -13,12 +13,17 @@ const TextToSpeech = async (text: string, onComplete ?: () => void) => {
     speechConfig.speechSynthesisVoiceName = "es-MX-DaliaNeural";
     const synthesizer : SpeechSynthesizer = new speechsdk.SpeechSynthesizer(speechConfig, audioConfig);
 
-    synthesizer.synthesisCompleted = (sender: SpeechSynthesizer, event: SpeechSynthesisEventArgs) => {
-        synthesizer.close();
-        onComplete && onComplete();
-    }
+    synthesizer.speakTextAsync(text, (e: SpeechSynthesisResult) => {
+        
+        //Ticks to miliseconds
+        let ms = e.audioDuration * 0.0001
+        
+        setTimeout(() => {
+            onComplete && onComplete();
+            synthesizer.close();
+        }, ms)
 
-    synthesizer.speakTextAsync(text);
+    });
 }
 
 export default TextToSpeech;
