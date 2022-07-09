@@ -9,9 +9,9 @@ const MicButton: React.FC<MicButtonProps> = ({ listening, ...props }) => {
     return (
         <button className="bg-blue rounded-full w-24 h-24" {...props}>
             {listening ? (
-                <CancelIcon className="text-[#F0F0F0] text-[65px]" />
+                <CancelIcon className="text-shell" sx={{ fontSize: '65px' }} />
             ) : (
-                <MicIcon className="text-[#F0F0F0] text-[65px]" />
+                <MicIcon className="text-shell" sx={{ fontSize: '65px' }} />
             )}
         </button>
     )
