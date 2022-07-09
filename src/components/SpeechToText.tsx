@@ -67,7 +67,7 @@ const SpeechToText: React.FC = () => {
     }
 
     return (
-        <div className="flex flex-col max-h-[89vh] w-1/2 items-center grow">
+        <div className="flex flex-col max-h-[89vh] w-full md:w-1/2 items-center grow">
             <MessageLog messageLog={messageLog} />
 
             <MessageBox message={message} />
