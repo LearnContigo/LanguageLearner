@@ -18,7 +18,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         previousMessages += `${message.userSent ? 'Human' : 'Bot'}: ${message.message.replace(/[\r\n]/gm, '').trim()}\n`
     }
 
-    let prompt = `A conversation in spanish with a bot who is teaching a human spanish:
+    let prompt = `A conversation in spanish with a bot named Contigo who is teaching a human spanish:
 Human: Hola como estas?
 Bot: Soy bueno. ¿Cómo te llamas?
 Human: Me llamo Alicia.
@@ -33,7 +33,8 @@ Bot:`
             model: 'text-curie-001',
             prompt,
             max_tokens: 60,
-            temperature: 0.3,
+            temperature: 0.9,
+            presence_penalty: 0.6,
             top_p: 1,
             n: 1,
             stream: false,
