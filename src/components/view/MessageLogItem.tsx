@@ -10,10 +10,10 @@ const MessageLogItem: React.FC<MessageLogItemProps> = ({ messageLogItem, ...prop
         <div
             className={`${
                 messageLogItem.userSent ? 'self-end bg-light-blue' : 'self-start bg-white'
-            } p-8 rounded-[19px] max-w-[400px] relative`}
+            } p-6 md:p-8 rounded-[19px] max-w-[400px] relative m-2`}
             {...props}
         >
-            <p className={`font-dosis text-4xl ${messageLogItem.userSent ? 'text-shell' : 'text-blue'}`}>
+            <p className={`font-dosis text-lg md:text-4xl ${messageLogItem.userSent ? 'text-shell' : 'text-blue'} `}>
                 {messageLogItem.message}
             </p>
             <button
@@ -22,7 +22,9 @@ const MessageLogItem: React.FC<MessageLogItemProps> = ({ messageLogItem, ...prop
                     TextToSpeech(messageLogItem.message)
                 }}
             >
-                <VolumeUpIcon className={`${messageLogItem.userSent ? 'text-shell' : 'text-blue'}`} />
+                <VolumeUpIcon
+                    className={`${messageLogItem.userSent ? 'text-shell' : 'text-blue'} text-sm md:text-2xl`}
+                />
             </button>
         </div>
     )
