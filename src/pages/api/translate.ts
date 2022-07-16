@@ -18,7 +18,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         params: {
             "api-version": "3.0",
             "from": "es",
-            "to": ["en"]
+            "to": "en"
         },
         data: [
             { 'text': req.body.userMessage },

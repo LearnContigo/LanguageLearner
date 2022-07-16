@@ -28,11 +28,19 @@ const SpeechToText: React.FC = () => {
         translation: ''
     } as Message)
     const [isTranslating, setIsTranslating] = useState(false)
+    const [translatedHelpMessage, setTranslatedHelpMessage] = useState({
+        text: '',
+        translation: ''
+    })
 
     const OnHelpPressed = () => {
         setIsTranslating(true)
-        translator?.recognizeOnceAsync(result => {
-            TextToSpeech(result.translations.get('es'), () => {
+        translator?.recognizeOnceAsync(async result => {
+            const message = result.text
+            const response = result.translations.get('es')
+            setTranslatedHelpMessage({ text: message, translation: response })
+
+            TextToSpeech(response, () => {
                 setIsTranslating(false)
             })
         })
@@ -43,7 +51,6 @@ const SpeechToText: React.FC = () => {
             StopTranscription()
             return
         }
-
         setCurrentMessage({ text: '', confidence: 1, translation: '' })
 
         StartTranscription(res => {
@@ -67,8 +74,9 @@ const SpeechToText: React.FC = () => {
             alert('Record a message!')
             return
         }
+        setTranslatedHelpMessage({ text: '', translation: '' })
         setCurrentMessage({ text: '', confidence: 1, translation: '' })
-        const {message, response} = await SendMessage(currentMessage)
+        const { message, response } = await SendMessage(currentMessage)
         AppendToMessageLog({ message: message, userSent: true })
         AppendToMessageLog({ message: response, userSent: false })
     }
@@ -81,6 +89,9 @@ const SpeechToText: React.FC = () => {
 
             <div className="flex mb-4 justify-center items-center gap-4">
                 <HelpButton disabled={isTranslating} onClick={OnHelpPressed} />
+                {translatedHelpMessage.translation}
+                <br />
+                {translatedHelpMessage.text}
                 <MicButton onClick={OnTranscribePressed} listening={listening} />
                 <SendButton onClick={OnSendPressed} />
                 <button className="bg-blue rounded-full w-20 h-20 text-white" onClick={toggleTranslate}>
