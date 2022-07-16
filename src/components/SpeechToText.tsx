@@ -6,6 +6,7 @@ import MessageBox from '../components/view/MessageBox'
 import MicButton from './view/MicButton'
 import HelpButton from './view/HelpButton'
 import SendButton from './view/SendButton'
+import RangeSliders from './view/RangeSliders'
 
 const SpeechToText: React.FC = () => {
     const {
@@ -18,8 +19,7 @@ const SpeechToText: React.FC = () => {
         SendMessage,
         translateText,
         toggleTranslate,
-        prosodyAttributes,
-        setProsodyAttributes
+        prosodyAttributes
     } = useConversation()
     const [currentMessage, setCurrentMessage] = useState({
         text: '',
@@ -82,6 +82,7 @@ const SpeechToText: React.FC = () => {
 
     return (
         <div className="flex flex-col max-h-[89vh] w-full md:w-1/2 items-center grow">
+            <RangeSliders />
             <MessageLog messageLog={messageLog} />
 
             <MessageBox message={currentMessage} />

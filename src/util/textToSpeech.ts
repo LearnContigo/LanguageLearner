@@ -2,7 +2,7 @@ import { getTokenOrRefresh } from './tokenUtil'
 import { SpeechSynthesisResult, SpeechSynthesizer } from 'microsoft-cognitiveservices-speech-sdk'
 const speechsdk = require('microsoft-cognitiveservices-speech-sdk')
 
-const TextToSpeech = async (text: string, rate="1", pitch="+0Hz", onComplete?: () => void) => {
+const TextToSpeech = async (text: string, rate: number, pitch: number, onComplete?: () => void) => {
     const tokenObj = await getTokenOrRefresh()
 
     if (!tokenObj.authToken) return
@@ -16,7 +16,7 @@ const TextToSpeech = async (text: string, rate="1", pitch="+0Hz", onComplete?: (
         `
         <speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="es-US">
             <voice name="es-MX-DaliaNeural">
-                <prosody rate="${rate}" pitch="${pitch}">
+                <prosody rate="${rate}" pitch="${pitch}Hz">
                     ${text}
                 </prosody>
             </voice>

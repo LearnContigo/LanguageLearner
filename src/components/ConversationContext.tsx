@@ -16,10 +16,10 @@ interface ConversationContext {
     StopTranscription: () => void
     SendMessage: (message: Message) => Promise<{message: Message, response: Message}> 
     toggleTranslate: () => void,
-    prosodyAttributes: { rate: string, pitch: string },
+    prosodyAttributes: { rate: number, pitch: number },
     setProsodyAttributes: React.Dispatch<React.SetStateAction<{
-        rate: string;
-        pitch: string;
+        rate: number;
+        pitch: number;
     }>>
 }
 
@@ -36,8 +36,8 @@ export const ConversationProvider : React.FC<React.PropsWithChildren> = ({childr
     const [listening, setListening] = useState(false);
     const [translateText, setTranslateText] = useState(true);
     const [prosodyAttributes, setProsodyAttributes] = useState({
-        rate: '1',
-        pitch: '+0Hz'
+        rate: 1,
+        pitch: 0
     })
     const translator = useTranslator();
 

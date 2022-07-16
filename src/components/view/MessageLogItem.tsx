@@ -8,7 +8,8 @@ interface MessageLogItemProps extends React.HTMLAttributes<HTMLElement> {
 
 const MessageLogItem: React.FC<MessageLogItemProps> = ({ messageLogItem, ...props }) => {
     const {
-        translateText
+        translateText,
+        prosodyAttributes
     } = useConversation()
 
     return (
@@ -28,7 +29,7 @@ const MessageLogItem: React.FC<MessageLogItemProps> = ({ messageLogItem, ...prop
             <button
                 className={`absolute bottom-0 ${messageLogItem.userSent ? 'left-0' : 'right-0'} m-2`}
                 onClick={() => {
-                    TextToSpeech(messageLogItem.message.text)
+                    TextToSpeech(messageLogItem.message.text, prosodyAttributes.rate, prosodyAttributes.pitch)
                 }}
             >
                 <VolumeUpIcon
