@@ -1,14 +1,11 @@
 import React, { useState } from 'react'
 import { useConversation } from './ConversationContext'
-import Message from './Message'
 import TextToSpeech from '../util/textToSpeech'
 import { MessageLog } from './MessageLog'
 import MessageBox from '../components/view/MessageBox'
 import MicButton from './view/MicButton'
 import HelpButton from './view/HelpButton'
 import SendButton from './view/SendButton'
-
-import axios from "axios";
 
 const SpeechToText: React.FC = () => {
     const {
@@ -20,7 +17,9 @@ const SpeechToText: React.FC = () => {
         StopTranscription,
         SendMessage,
         translateText,
-        toggleTranslate
+        toggleTranslate,
+        prosodyAttributes,
+        setProsodyAttributes
     } = useConversation()
     const [currentMessage, setCurrentMessage] = useState({
         text: '',
@@ -40,7 +39,7 @@ const SpeechToText: React.FC = () => {
             const response = result.translations.get('es')
             setTranslatedHelpMessage({ text: message, translation: response })
 
-            TextToSpeech(response, () => {
+            TextToSpeech(response, prosodyAttributes.rate, prosodyAttributes.pitch, () => {
                 setIsTranslating(false)
             })
         })

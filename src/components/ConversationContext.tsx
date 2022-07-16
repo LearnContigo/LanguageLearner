@@ -15,7 +15,12 @@ interface ConversationContext {
     StartTranscription : (onRecognized: (result: Confidences) => void) => void
     StopTranscription: () => void
     SendMessage: (message: Message) => Promise<{message: Message, response: Message}> 
-    toggleTranslate: () => void
+    toggleTranslate: () => void,
+    prosodyAttributes: { rate: string, pitch: string },
+    setProsodyAttributes: React.Dispatch<React.SetStateAction<{
+        rate: string;
+        pitch: string;
+    }>>
 }
 
 const ConversationContext = createContext({} as ConversationContext);
@@ -30,6 +35,10 @@ export const ConversationProvider : React.FC<React.PropsWithChildren> = ({childr
     const recognizer = useRecognizer('es-es');
     const [listening, setListening] = useState(false);
     const [translateText, setTranslateText] = useState(true);
+    const [prosodyAttributes, setProsodyAttributes] = useState({
+        rate: '1',
+        pitch: '+0Hz'
+    })
     const translator = useTranslator();
 
     const StartTranscription = (onRecognized: (result: Confidences) => void) => {
@@ -70,7 +79,7 @@ export const ConversationProvider : React.FC<React.PropsWithChildren> = ({childr
 
         const responseText = res.data.choices[0].text;
 
-        TextToSpeech(responseText);
+        TextToSpeech(responseText, prosodyAttributes.rate, prosodyAttributes.pitch);
 
         // translate message and response
         const translationsResponse = await axios.post("/api/translate", {
@@ -89,7 +98,7 @@ export const ConversationProvider : React.FC<React.PropsWithChildren> = ({childr
     const toggleTranslate = () => {
         setTranslateText(!translateText);
     }
-    const obj = { messageLog, AppendToMessageLog, translator, recognizer, listening, StartTranscription, StopTranscription, SendMessage, translateText, toggleTranslate}
+    const obj = { messageLog, AppendToMessageLog, translator, recognizer, listening, StartTranscription, StopTranscription, SendMessage, translateText, toggleTranslate, prosodyAttributes, setProsodyAttributes}
 
     return <ConversationContext.Provider value={obj}>{children}</ConversationContext.Provider>
 }
