@@ -9,11 +9,13 @@ interface ConversationContext {
     translator ?: TranslationRecognizer
     recognizer ?: SpeechRecognizer
     listening : boolean
+    translateText: boolean
     messageLog: MessageLogItem[]
     AppendToMessageLog: (logItem: MessageLogItem) => void
     StartTranscription : (onRecognized: (result: Confidences) => void) => void
     StopTranscription: () => void
-    SendMessage: (message: string) => Promise<{message: string, response: string}> 
+    SendMessage: (message: Message) => Promise<{message: Message, response: Message}> 
+    toggleTranslate: () => void
 }
 
 const ConversationContext = createContext({} as ConversationContext);
@@ -27,6 +29,7 @@ export const ConversationProvider : React.FC<React.PropsWithChildren> = ({childr
     const [messageLog, setMessageLog] = useState<MessageLogItem[]>([]);
     const recognizer = useRecognizer('es-es');
     const [listening, setListening] = useState(false);
+    const [translateText, setTranslateText] = useState(true);
     const translator = useTranslator();
 
     const StartTranscription = (onRecognized: (result: Confidences) => void) => {
@@ -58,21 +61,35 @@ export const ConversationProvider : React.FC<React.PropsWithChildren> = ({childr
         return messageLog.slice(-N, messageLog.length);
     }
 
-    const SendMessage = async (message: string) => {
-
+    const SendMessage = async (message: Message) => {
+        const text = message.text
         const res = await axios.post("/api/completion", {
-            message,
+            text,
             context: GetPastMessages(4)
         });
 
-        const response = res.data.choices[0].text;
+        const responseText = res.data.choices[0].text;
 
-        TextToSpeech(response);
+        TextToSpeech(responseText);
 
+        // translate message and response
+        const translationsResponse = await axios.post("/api/translate", {
+            userMessage: message.text,
+            response: responseText
+        });
+        message.translation = translationsResponse.data.translation[0].translations[0].text
+        let response: Message = {
+            text: responseText, 
+            confidence: -1, 
+            translation: translationsResponse.data.translation[1].translations[0].text
+        }
         return {message, response}
     }
 
-    const obj = { messageLog, AppendToMessageLog, translator, recognizer, listening, StartTranscription, StopTranscription, SendMessage}
+    const toggleTranslate = () => {
+        setTranslateText(!translateText);
+    }
+    const obj = { messageLog, AppendToMessageLog, translator, recognizer, listening, StartTranscription, StopTranscription, SendMessage, translateText, toggleTranslate}
 
     return <ConversationContext.Provider value={obj}>{children}</ConversationContext.Provider>
 }

@@ -8,6 +8,8 @@ import MicButton from './view/MicButton'
 import HelpButton from './view/HelpButton'
 import SendButton from './view/SendButton'
 
+import axios from "axios";
+
 const SpeechToText: React.FC = () => {
     const {
         messageLog,
@@ -17,10 +19,13 @@ const SpeechToText: React.FC = () => {
         StartTranscription,
         StopTranscription,
         SendMessage,
+        translateText,
+        toggleTranslate
     } = useConversation()
-    const [message, setMessage] = useState({
-        message: '',
+    const [currentMessage, setCurrentMessage] = useState({
+        text: '',
         confidence: 1,
+        translation: ''
     } as Message)
     const [isTranslating, setIsTranslating] = useState(false)
 
@@ -39,43 +44,48 @@ const SpeechToText: React.FC = () => {
             return
         }
 
-        setMessage({ message: '', confidence: 1 })
+        setCurrentMessage({ text: '', confidence: 1, translation: '' })
 
         StartTranscription(res => {
             if (!res.DisplayText || res.DisplayText == '') return
             console.log(res.NBest[0]?.Confidence)
-            setMessage(prev => {
+            setCurrentMessage(prev => {
                 return {
                     confidence: res.NBest[0]?.Confidence,
-                    message: res.DisplayText === undefined ? prev.message : prev.message + res.DisplayText,
+                    text: res.DisplayText === undefined ? prev.text : prev.text + res.DisplayText,
+                    translation: prev.translation // should be empty anyway
                 }
             })
         })
     }
 
     const OnSendPressed = async () => {
+        console.log('current message: ', currentMessage)
         if (listening) StopTranscription()
 
-        if (!message.message) {
+        if (!currentMessage.text) {
             alert('Record a message!')
             return
         }
-        AppendToMessageLog({ message: message.message, userSent: true })
-        const output = await SendMessage(message.message)
-        AppendToMessageLog({ message: output.response, userSent: false })
-        setMessage({ message: '', confidence: 1 })
+        setCurrentMessage({ text: '', confidence: 1, translation: '' })
+        const {message, response} = await SendMessage(currentMessage)
+        AppendToMessageLog({ message: message, userSent: true })
+        AppendToMessageLog({ message: response, userSent: false })
     }
 
     return (
         <div className="flex flex-col max-h-[89vh] w-full md:w-1/2 items-center grow">
             <MessageLog messageLog={messageLog} />
 
-            <MessageBox message={message} />
+            <MessageBox message={currentMessage} />
 
             <div className="flex mb-4 justify-center items-center gap-4">
                 <HelpButton disabled={isTranslating} onClick={OnHelpPressed} />
                 <MicButton onClick={OnTranscribePressed} listening={listening} />
                 <SendButton onClick={OnSendPressed} />
+                <button className="bg-blue rounded-full w-20 h-20 text-white" onClick={toggleTranslate}>
+                    {translateText ? "Turn translation off" : "Turn translation on"}
+                </button>
             </div>
         </div>
     )

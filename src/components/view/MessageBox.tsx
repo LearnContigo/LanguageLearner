@@ -1,5 +1,5 @@
 interface MessageBoxProps {
-    message: { message: string; confidence: number }
+    message: Message
 }
 
 const MessageBox: React.FC<MessageBoxProps> = ({ message }) => {
@@ -10,7 +10,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({ message }) => {
                     message.confidence < 0.66 ? 'underline decoration-wavy decoration-[#09d639]' : ''
                 }`}
             >
-                {message.message}
+                {message.text}
             </p>
         </div>
     )
