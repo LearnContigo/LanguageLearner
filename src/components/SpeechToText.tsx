@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { useConversation } from './ConversationContext'
-import Message from './Message'
 import TextToSpeech from '../util/textToSpeech'
 import { MessageLog } from './MessageLog'
 import MessageBox from '../components/view/MessageBox'
 import MicButton from './view/MicButton'
 import HelpButton from './view/HelpButton'
 import SendButton from './view/SendButton'
+import RangeSliders from './view/RangeSliders'
 
 const SpeechToText: React.FC = () => {
     const {
@@ -17,17 +17,29 @@ const SpeechToText: React.FC = () => {
         StartTranscription,
         StopTranscription,
         SendMessage,
+        translateText,
+        toggleTranslate,
+        prosodyAttributes
     } = useConversation()
-    const [message, setMessage] = useState({
-        message: '',
+    const [currentMessage, setCurrentMessage] = useState({
+        text: '',
         confidence: 1,
+        translation: ''
     } as Message)
     const [isTranslating, setIsTranslating] = useState(false)
+    const [translatedHelpMessage, setTranslatedHelpMessage] = useState({
+        text: '',
+        translation: ''
+    })
 
     const OnHelpPressed = () => {
         setIsTranslating(true)
-        translator?.recognizeOnceAsync(result => {
-            TextToSpeech(result.translations.get('es'), () => {
+        translator?.recognizeOnceAsync(async result => {
+            const message = result.text
+            const response = result.translations.get('es')
+            setTranslatedHelpMessage({ text: message, translation: response })
+
+            TextToSpeech(response, prosodyAttributes.rate, prosodyAttributes.pitch, () => {
                 setIsTranslating(false)
             })
         })
@@ -38,45 +50,52 @@ const SpeechToText: React.FC = () => {
             StopTranscription()
             return
         }
-
-        setMessage({ message: '', confidence: 1 })
+        setCurrentMessage({ text: '', confidence: 1, translation: '' })
 
         StartTranscription(res => {
             if (!res.DisplayText || res.DisplayText == '') return
-            // console.log(res.NBest[0]?.Confidence)
-            setMessage(prev => {
-            // setCurrentMessage(prev => {
+            setCurrentMessage(prev => {
                 return {
                     confidence: res.NBest[0]?.Confidence,
-                    message: res.DisplayText === undefined ? prev.message : prev.message + res.DisplayText,
+                    text: res.DisplayText === undefined ? prev.text : prev.text + res.DisplayText,
+                    translation: prev.translation // should be empty anyway
                 }
             })
         })
     }
 
     const OnSendPressed = async () => {
+        console.log('current message: ', currentMessage)
         if (listening) StopTranscription()
 
-        if (!message.message) {
+        if (!currentMessage.text) {
             alert('Record a message!')
             return
         }
-        AppendToMessageLog({ message: message.message, userSent: true })
-        const output = await SendMessage(message.message)
-        AppendToMessageLog({ message: output.response, userSent: false })
-        setMessage({ message: '', confidence: 1 })
+        setTranslatedHelpMessage({ text: '', translation: '' })
+        setCurrentMessage({ text: '', confidence: 1, translation: '' })
+        const { message, response } = await SendMessage(currentMessage)
+        AppendToMessageLog({ message: message, userSent: true })
+        AppendToMessageLog({ message: response, userSent: false })
     }
 
     return (
         <div className="flex flex-col max-h-[89vh] w-full md:w-1/2 items-center grow">
+            <RangeSliders />
             <MessageLog messageLog={messageLog} />
 
-            <MessageBox message={message} />
+            <MessageBox message={currentMessage} />
 
             <div className="flex mb-4 justify-center items-center gap-4">
                 <HelpButton disabled={isTranslating} onClick={OnHelpPressed} />
+                {translatedHelpMessage.translation}
+                <br />
+                {translatedHelpMessage.text}
                 <MicButton onClick={OnTranscribePressed} listening={listening} />
                 <SendButton onClick={OnSendPressed} />
+                <button className="bg-blue rounded-full w-20 h-20 text-white" onClick={toggleTranslate}>
+                    {translateText ? "Turn translation off" : "Turn translation on"}
+                </button>
             </div>
         </div>
     )

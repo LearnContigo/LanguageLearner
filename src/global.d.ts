@@ -8,12 +8,13 @@ declare global {
     }
     
     interface Message {
-        message: string
+        text: string
         confidence: number
+        translation: string
     }
 
     interface MessageLogItem {
-        message: string
+        message: Message
         userSent: boolean
     }
     

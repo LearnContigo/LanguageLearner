@@ -11,11 +11,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         },
     }
 
-    const context = req.body.context
+    const context: MessageLogItem[] = req.body.context
     let previousMessages = ''
 
-    for (const message of context) {
-        previousMessages += `${message.userSent ? 'Human' : 'Bot'}: ${message.message.replace(/[\r\n]/gm, '').trim()}\n`
+    for (const messageLogItem of context) {
+        previousMessages += `${messageLogItem.userSent ? 'Human' : 'Bot'}: ${messageLogItem.message.text.replace(/[\r\n]/gm, '').trim()}\n`
     }
 
     let prompt = `A conversation in spanish with a bot named Contigo who is teaching a human spanish:
