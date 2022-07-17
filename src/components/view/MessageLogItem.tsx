@@ -21,11 +21,11 @@ const MessageLogItem: React.FC<MessageLogItemProps> = ({ messageLogItem, ...prop
             <p className={`font-dosis text-lg md:text-4xl ${messageLogItem.userSent ? 'text-shell' : 'text-blue'} `}>
                 {messageLogItem.message.text}
             </p>
-            {translateText &&
-                <p className={`font-dosis text-xs md:text-xl ${messageLogItem.userSent ? 'text-shell' : 'text-blue'} `}>
+            
+                <p className={`font-dosis text-xs md:text-xl ${translateText ? 'visible' : 'invisible'} ${messageLogItem.userSent ? 'text-shell' : 'text-blue'} `}>
                     {messageLogItem.message.translation}
                 </p>
-            }
+            
             <button
                 className={`absolute bottom-0 ${messageLogItem.userSent ? 'left-0' : 'right-0'} m-2`}
                 onClick={() => {
