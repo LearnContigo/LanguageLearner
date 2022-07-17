@@ -43,8 +43,9 @@ const SpeechToText: React.FC = () => {
 
         StartTranscription(res => {
             if (!res.DisplayText || res.DisplayText == '') return
-            console.log(res.NBest[0]?.Confidence)
+            // console.log(res.NBest[0]?.Confidence)
             setMessage(prev => {
+            // setCurrentMessage(prev => {
                 return {
                     confidence: res.NBest[0]?.Confidence,
                     message: res.DisplayText === undefined ? prev.message : prev.message + res.DisplayText,

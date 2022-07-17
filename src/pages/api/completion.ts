@@ -24,7 +24,7 @@ Bot: Soy bueno. ¿Cómo te llamas?
 Human: Me llamo Alicia.
 Bot: Me llamo Contigo.
 ${previousMessages}
-Human:${req.body.message}
+Human:${req.body.text}
 Bot:`
 
     let { data } = await axios.post(
@@ -43,6 +43,5 @@ Bot:`
         },
         headers
     )
-
     res.status(200).send(data)
 }
