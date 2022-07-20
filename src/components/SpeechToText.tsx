@@ -18,18 +18,17 @@ const SpeechToText: React.FC = () => {
         StopTranscription,
         SendMessage,
         translateText,
-        toggleTranslate,
-        prosodyAttributes
+        prosodyAttributes,
     } = useConversation()
     const [currentMessage, setCurrentMessage] = useState({
         text: '',
         confidence: 1,
-        translation: ''
+        translation: '',
     } as Message)
     const [isTranslating, setIsTranslating] = useState(false)
     const [translatedHelpMessage, setTranslatedHelpMessage] = useState({
         text: '',
-        translation: ''
+        translation: '',
     })
 
     const OnHelpPressed = () => {
@@ -58,7 +57,7 @@ const SpeechToText: React.FC = () => {
                 return {
                     confidence: res.NBest[0]?.Confidence,
                     text: res.DisplayText === undefined ? prev.text : prev.text + res.DisplayText,
-                    translation: prev.translation // should be empty anyway
+                    translation: prev.translation, // should be empty anyway
                 }
             })
         })
@@ -80,22 +79,16 @@ const SpeechToText: React.FC = () => {
     }
 
     return (
-        <div className="flex flex-col max-h-[89vh] w-full md:w-1/2 items-center grow">
-            <RangeSliders />
+        <div className="flex flex-col items-center grow">
             <MessageLog messageLog={messageLog} />
-
             <MessageBox message={currentMessage} />
 
             <div className="flex mb-4 justify-center items-center gap-4">
                 <HelpButton disabled={isTranslating} onClick={OnHelpPressed} />
                 {translatedHelpMessage.translation}
-                <br />
                 {translatedHelpMessage.text}
                 <MicButton onClick={OnTranscribePressed} listening={listening} />
                 <SendButton onClick={OnSendPressed} />
-                <button className="bg-blue rounded-full w-20 h-20 text-white" onClick={toggleTranslate}>
-                    {translateText ? "Turn translation off" : "Turn translation on"}
-                </button>
             </div>
         </div>
     )
