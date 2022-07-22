@@ -17,7 +17,6 @@ const SpeechToText: React.FC = () => {
         StartTranscription,
         StopTranscription,
         SendMessage,
-        translateText,
         prosodyAttributes,
     } = useConversation()
     const [currentMessage, setCurrentMessage] = useState({

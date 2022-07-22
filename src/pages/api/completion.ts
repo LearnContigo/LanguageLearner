@@ -15,7 +15,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     let previousMessages = ''
 
     for (const messageLogItem of context) {
-        previousMessages += `${messageLogItem.userSent ? 'Human' : 'Bot'}: ${messageLogItem.message.text.replace(/[\r\n]/gm, '').trim()}\n`
+        previousMessages += `${messageLogItem.userSent ? 'Human' : 'Bot'}: ${messageLogItem.message.text
+            .replace(/[\r\n]/gm, '')
+            .trim()}\n`
     }
 
     let prompt = `A conversation in spanish with a bot named Contigo who is teaching a human spanish:
@@ -45,3 +47,22 @@ Bot:`
     )
     res.status(200).send(data)
 }
+
+/* 
+
+A conversation with a Spanish speaking bot named Contigo that corrects the human's grammar:
+
+Human: Hola como estas?
+Correction: None
+Bot Response: Soy bueno. ¿Cómo te llamas?
+Human: Me llamo Alicia.
+Correction: None
+Bot Response: Me llamo Contigo.
+Human: Yo estas viva
+Correction: Yo estoy viva
+Response: Yo también
+Human: Yo es rapida
+Correction: Yo soy rápida
+Response: Bueno, me alegra conocerte.
+
+*/
