@@ -23,7 +23,7 @@ export const MessageLog: React.FC<MessageLogProps> = ({ messageLog, ...props }) 
     }, [listRef, messageLog])
 
     return (
-        <div className="flex flex-col w-full mb-auto overflow-auto" {...props} ref={listRef}>
+        <div className="flex flex-col w-full z-0 max-w-[800px] mb-auto overflow-auto" {...props} ref={listRef}>
             {messageLog.map((logItem, index) => {
                 return <MessageLogItem messageLogItem={logItem} key={index} />
             })}
