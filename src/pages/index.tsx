@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import SpeechToText from '../components/SpeechToText'
+import ChatApp from '../components/ChatApp'
 import { ConversationProvider } from '../components/ConversationContext'
 import Settings from '../components/Settings'
 import Nav from '../components/view/Nav'
@@ -11,7 +11,7 @@ const Home: NextPage = () => {
             <ConversationProvider>
                 <div className="flex max-h-[89vh] w-full grow">
                     <Settings />
-                    <SpeechToText />
+                    <ChatApp />
                 </div>
             </ConversationProvider>
         </div>

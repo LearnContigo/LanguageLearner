@@ -1,11 +1,10 @@
 import * as React from 'react'
 import MessageLogItem from './view/MessageLogItem'
+import { useConversation } from './ConversationContext'
 
-interface MessageLogProps extends React.HTMLAttributes<HTMLElement> {
-    messageLog: MessageLogItem[]
-}
+export const MessageLog: React.FC = ({ ...props }) => {
+    const { messageLog } = useConversation()
 
-export const MessageLog: React.FC<MessageLogProps> = ({ messageLog, ...props }) => {
     const listRef = React.useRef<HTMLDivElement>(null)
 
     React.useEffect(() => {

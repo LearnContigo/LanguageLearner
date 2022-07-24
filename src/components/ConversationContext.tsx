@@ -30,6 +30,8 @@ interface ConversationContext {
         }>
     >
     GetCorrection: (message: Message) => Promise<string>
+    currentMessage: Message
+    setCurrentMessage: React.Dispatch<React.SetStateAction<Message>>
 }
 
 const ConversationContext = createContext({} as ConversationContext)
@@ -47,6 +49,9 @@ export const ConversationProvider: React.FC<React.PropsWithChildren> = ({ childr
         rate: 1,
         pitch: 0,
     })
+
+    const [currentMessage, setCurrentMessage] = useState({ text: '', confidence: 1, translation: '' } as Message)
+
     const translator = useTranslator()
 
     const StartTranscription = (onRecognized: (result: Confidences) => void) => {
@@ -129,6 +134,8 @@ export const ConversationProvider: React.FC<React.PropsWithChildren> = ({ childr
         prosodyAttributes,
         setProsodyAttributes,
         GetCorrection,
+        currentMessage,
+        setCurrentMessage,
     }
 
     return <ConversationContext.Provider value={obj}>{children}</ConversationContext.Provider>
