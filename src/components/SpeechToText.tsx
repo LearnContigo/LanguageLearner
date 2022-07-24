@@ -6,7 +6,6 @@ import MessageBox from '../components/view/MessageBox'
 import MicButton from './view/MicButton'
 import HelpButton from './view/HelpButton'
 import SendButton from './view/SendButton'
-import RangeSliders from './view/RangeSliders'
 
 const SpeechToText: React.FC = () => {
     const {
@@ -18,6 +17,7 @@ const SpeechToText: React.FC = () => {
         StopTranscription,
         SendMessage,
         prosodyAttributes,
+        GetCorrection,
     } = useConversation()
     const [currentMessage, setCurrentMessage] = useState({
         text: '',
@@ -55,7 +55,7 @@ const SpeechToText: React.FC = () => {
             setCurrentMessage(prev => {
                 return {
                     confidence: res.NBest[0]?.Confidence,
-                    text: res.DisplayText === undefined ? prev.text : prev.text + res.DisplayText,
+                    text: res.DisplayText === undefined ? prev.text : prev.text + ' ' + res.DisplayText,
                     translation: prev.translation, // should be empty anyway
                 }
             })
@@ -72,8 +72,16 @@ const SpeechToText: React.FC = () => {
         }
         setTranslatedHelpMessage({ text: '', translation: '' })
         setCurrentMessage({ text: '', confidence: 1, translation: '' })
+
+        const correction = await GetCorrection(currentMessage)
         const { message, response } = await SendMessage(currentMessage)
         AppendToMessageLog({ message: message, userSent: true })
+        if (correction != currentMessage.text) {
+            AppendToMessageLog({
+                message: { text: `Correction: ${correction}`, confidence: 1, translation: '' },
+                userSent: false,
+            })
+        }
         AppendToMessageLog({ message: response, userSent: false })
     }
 
@@ -86,7 +94,7 @@ const SpeechToText: React.FC = () => {
                 <HelpButton disabled={isTranslating} onClick={OnHelpPressed} />
                 {translatedHelpMessage.translation}
                 {translatedHelpMessage.text}
-                <MicButton onClick={OnTranscribePressed} listening={listening} />
+                <MicButton onClick={OnTranscribePressed} listening={listening} message={currentMessage.text} />
                 <SendButton onClick={OnSendPressed} />
             </div>
         </div>
