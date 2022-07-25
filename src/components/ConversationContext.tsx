@@ -20,7 +20,7 @@ interface ConversationContext {
     AppendToMessageLog: (logItem: MessageLogItem) => void
     StartTranscription: (onRecognized: (result: Confidences) => void) => void
     StopTranscription: () => void
-    SendMessage: (message: Message) => Promise<{ message: Message; response: Message }>
+    SendMessage: (message: Message) => Promise<Message>
     toggleTranslate: () => void
     prosodyAttributes: { rate: number; pitch: number }
     setProsodyAttributes: React.Dispatch<
@@ -103,18 +103,12 @@ export const ConversationProvider: React.FC<React.PropsWithChildren> = ({ childr
 
         TextToSpeech(responseText, prosodyAttributes.rate, prosodyAttributes.pitch)
 
-        // translate message and response
-        const translationsResponse = await axios.post('/api/translate', {
-            userMessage: message.text,
-            response: responseText,
-        })
-        message.translation = translationsResponse.data.translation[0].translations[0].text
         let response: Message = {
             text: responseText,
             confidence: -1,
-            translation: translationsResponse.data.translation[1].translations[0].text,
+            translation: '',
         }
-        return { message, response }
+        return response
     }
 
     const toggleTranslate = () => {

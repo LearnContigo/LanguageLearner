@@ -11,9 +11,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         },
     }
 
-    let prompt = `Correct this to standard Spanish:
-    ${req.body.text}
-    `
+    let prompt = `Corregir la gramática española:\n\nInput: ${req.body.text}\nCorrection: `
 
     let { data } = await axios.post(
         'https://api.openai.com/v1/completions',
@@ -25,6 +23,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
+            stop: ['Input:'],
         },
         headers
     )
