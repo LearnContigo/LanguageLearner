@@ -28,8 +28,14 @@ const SendButton: React.FC = ({ ...props }) => {
         const correction = await GetCorrection(currentMessage)
 
         if (
-            correction.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()¿?¡]/g, '').trim() !=
-            currentMessage.text.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()¿?¡]/g, '').trim()
+            correction
+                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()¿?¡]/g, '')
+                .trim()
+                .toLowerCase() !=
+            currentMessage.text
+                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()¿?¡]/g, '')
+                .trim()
+                .toLowerCase()
         ) {
             AppendToMessageLog({
                 message: { text: `Correction: ${correction}`, confidence: 1, translation: '' },
