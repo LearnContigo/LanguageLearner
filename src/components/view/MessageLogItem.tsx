@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react'
 import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 import TextToSpeech from '../../util/textToSpeech'
 import { useConversation } from '../ConversationContext'
+import axios from 'axios'
 
 interface MessageLogItemProps extends React.HTMLAttributes<HTMLElement> {
     messageLogItem: MessageLogItem
@@ -8,6 +10,18 @@ interface MessageLogItemProps extends React.HTMLAttributes<HTMLElement> {
 
 const MessageLogItem: React.FC<MessageLogItemProps> = ({ messageLogItem, ...props }) => {
     const { translateText, prosodyAttributes } = useConversation()
+    const [translation, setTranslation] = useState('')
+
+    useEffect(() => {
+        const fetchTranslation = async () => {
+            const translationsResponse = await axios.post('/api/translate', {
+                message: messageLogItem.message.text,
+            })
+            setTranslation(translationsResponse?.data?.translation[0]?.translations[0]?.text)
+        }
+
+        fetchTranslation()
+    }, [])
 
     return (
         <div
@@ -25,7 +39,7 @@ const MessageLogItem: React.FC<MessageLogItemProps> = ({ messageLogItem, ...prop
                     messageLogItem.userSent ? 'text-shell' : 'text-blue'
                 } `}
             >
-                {messageLogItem.message.translation}
+                {translation}
             </p>
 
             <button
