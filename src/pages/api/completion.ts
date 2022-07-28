@@ -15,28 +15,29 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     let previousMessages = ''
 
     for (const messageLogItem of context) {
-        previousMessages += `${messageLogItem.userSent ? 'Human' : 'Bot'}: ${messageLogItem.message.text
+        previousMessages += `${messageLogItem.userSent ? 'Human' : 'Contigo'}: ${messageLogItem.message.text
             .replace(/[\r\n]/gm, '')
             .trim()}\n`
     }
 
     let prompt = `A conversation in spanish with a chatty friend named Contigo who is teaching a human spanish, and likes to ask lots of questions about food:
 Human: Hola como estas?
-Bot: Soy bueno. ¿Cómo te llamas?
+Contigo: Soy bueno. ¿Cómo te llamas?
 Human: Me llamo Alicia.
-Bot: Me llamo Contigo.
+Contigo: Me llamo Contigo.
 ${previousMessages}
 Human:${req.body.text}
-Bot:`
+Contigo:`
 
     let { data } = await axios.post(
         'https://api.openai.com/v1/completions',
         {
-            model: 'text-curie-001',
+            model: 'text-davinci-002',
             prompt,
             max_tokens: 100,
-            temperature: 0.9,
-            presence_penalty: 0.6,
+            temperature: 0.6,
+            presence_penalty: 1,
+            frequency_penalty: 1,
             top_p: 1,
             n: 1,
             stream: false,
